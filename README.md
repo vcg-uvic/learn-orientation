@@ -1,6 +1,6 @@
 # Learning to Assign Orientations to Feature Points
 
-This software is a Python implemenation of the Learned Orientation Estimator presented in [1]. This software is intended to be used in conjuction with the [benchmark-orientation](https://github.com/kmyid/benchmark-orientation) repository. By default, the software does *not* use GPU, but can be easily enabled by configuring Theano to do so.
+This software is a Python implemenation of the Learned Orientation Estimator presented in [1]. This software is intended to be used in conjuction with the [benchmark-orientation](https://github.com/kmyid/benchmark-orientation) repository, i.e. they should be *cloned side-by-side*. By default, the software does *not* use GPU, but can be easily enabled by configuring Theano to do so.
 
 This software is strictly for academic purposes only.  For other purposes, please contact us.  When using this software, please cite [1] and other appropriate publications if necessary (see matlab/external/licenses for details).
 

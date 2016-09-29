@@ -1,3 +1,4 @@
+#!/bin/env python2
 # runSingleTestWithFiles.py ---
 #
 # Filename: runSingleTestWithFiles.py
@@ -43,15 +44,21 @@ from Utils.kp_tools import (IDX_ANGLE, loadKpListFromTxt, saveKpListToTxt,
 if __name__ == '__main__':
     """ Main routine """
 
-    if len(sys.argv) != 5:
+    if len(sys.argv) != 5 and len(sys.argv) != 6:
         raise RuntimeError(
             "USAGE: python runSingleTestWithFiles.py "
-            "<image_file> <kp_file> <config_file> <output_file>")
+            "<image_file> <kp_file> <config_file> <output_file> "
+            "<isdeterministic(0/1)>")
 
     image_file_name = sys.argv[1]
     kp_file_name = sys.argv[2]
     config_file = sys.argv[3]
     output_file = sys.argv[4]
+
+    # Default test mode is stochastic
+    deterministic = False
+    if len(sys.argv) >= 6:
+        deterministic = bool(int(sys.argv[5]))
 
     # ------------------------------------------
     # Setup and load parameters
@@ -72,8 +79,8 @@ if __name__ == '__main__':
     # ------------------------------------------
     # Run Evaluate
     start_time = time.clock()
-    eval_res = testModelNew(
-        image_file_name, kp_file_name, pathconf, param, model_epoch)
+    eval_res = testModelNew(image_file_name, kp_file_name, pathconf, param,
+                            model_epoch, deterministic)
     end_time = time.clock()
     print("Time taken to compute for image {} (including compile time)"
           " is {} seconds".format(

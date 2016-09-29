@@ -7,9 +7,6 @@
 # Created: Fri Mar  6 11:52:42 2015 (+0100)
 # Version:
 # Package-Requires: ()
-# Last-Updated: Thu Jul  7 10:54:17 2016 (+0200)
-#           By: Kwang Moo Yi
-#     Update #: 234
 # URL:
 # Doc URL:
 # Keywords:
@@ -42,7 +39,8 @@ from Utils.data_tools import loadPatchData
 from Utils.networks.buildLayers import instantiateLayers
 
 
-def testModelNew(img_file_name, kp_file_name, pathconf, param, model_epoch=""):
+def testModelNew(img_file_name, kp_file_name, pathconf, param, model_epoch="",
+                 deterministic=False):
 
     if param.runType != "CVPR16":
         raise NotImplementedError(
@@ -104,7 +102,7 @@ def testModelNew(img_file_name, kp_file_name, pathconf, param, model_epoch=""):
     # Actual instantiation and setup
     myNet = SiameseOrientationLearner(myNetConfig)
 
-    instantiateLayers(myNet)
+    instantiateLayers(myNet, deterministic)
     # myNet.setupSGD()
     myNet.setupDataAndCompile4Test()
 

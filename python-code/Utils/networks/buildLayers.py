@@ -7,9 +7,6 @@
 # Created: Fri Aug 14 13:44:40 2015 (+0200)
 # Version:
 # Package-Requires: ()
-# Last-Updated: Tue Jul  5 16:19:41 2016 (+0200)
-#           By: Kwang Moo Yi
-#     Update #: 129
 # URL:
 # Doc URL:
 # Keywords:
@@ -52,7 +49,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 floatX = theano.config.floatX
 
 
-def instantiateLayers(myNet):
+def instantiateLayers(myNet, deterministic):
     '''
     Build layers here
 
@@ -100,7 +97,7 @@ def instantiateLayers(myNet):
         # ---------------------------------------------------------------------
         # If necessary, generate the dropout test layer and the corresponding
         # output
-        if bDropout:
+        if bDropout and deterministic:
             myNet.test_layers[idxSiam] = buildDropoutTestLayers(
                 myNet.layers[idxSiam], dropout_rates)
         else:
@@ -280,12 +277,23 @@ def buildDropoutTestLayers(orig_layer_list, dropout_rates):
     test_layer_list = []
 
     # For each layer in the network
+    prev_layer_output = None
     for cur_layer, dropout_rate in zip(orig_layer_list, dropout_rates):
 
         # Note that these will carry the normal name and args_in excluding the
         # dropout init
         layer_name = cur_layer.name
         layer_args = cur_layer.args_in
+
+        # Use input from the previous test layer
+        if prev_layer_output is not None:
+            # flatten the input layer into two dims if hidden layer
+            if cur_layer.name[-11:] == "HiddenLayer":
+                cur_layer_input = prev_layer_output.flatten(2)
+            else:
+                cur_layer_input = prev_layer_output
+            layer_args = (layer_args[0],) + \
+                (cur_layer_input,) + layer_args[2:]
 
         # Change the last arguments so that it simply uses the weights
         # of the  other layer!  note that the  original implementation
@@ -296,6 +304,9 @@ def buildDropoutTestLayers(orig_layer_list, dropout_rates):
 
         # Call the appropriate layer with it's name
         test_layer = globals()[layer_name](*new_layer_args)
+
+        # Store the output
+        prev_layer_output = test_layer.output
 
         test_layer_list += [test_layer]
 

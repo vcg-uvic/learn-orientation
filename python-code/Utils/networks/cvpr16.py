@@ -209,8 +209,6 @@ class SiameseOrientationLearner(object):
             self.test_x[idxSiam].set_value(
                 numpy.asarray(test_x_in, dtype=floatX))
 
-        # self.test_x_id.set_value(test_x_id_in)
-        # self.test_y.set_value(test_y_in)
         test_result = self.get_output()
         test_raw_output = self.get_raw_output()
         # ---------------------------------------------------------------------

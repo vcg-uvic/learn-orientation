@@ -7,9 +7,6 @@
 # Created: Tue Jan 27 11:17:55 2015 (+0100)
 # Version:
 # Package-Requires: ()
-# Last-Updated: Mon Jul  4 05:51:24 2016 (-0700)
-#           By: Kwang Moo Yi
-#     Update #: 858
 # URL:
 # Doc URL:
 # Keywords:
@@ -117,12 +114,12 @@ class LeNetConvPoolLayer(object):
             self.b = b_in
 
         # convolve input feature maps with filters
-        conv_out = conv.conv2d(input=input, filters=self.W,
-                               filter_shape=filter_shape,
-                               image_shape=image_shape)
+        self.conv_out = conv.conv2d(input=input, filters=self.W,
+                                    filter_shape=filter_shape,
+                                    image_shape=image_shape)
 
         # downsample each feature map individually, using maxpooling
-        pooled_out = downsample.max_pool_2d(input=conv_out,
+        pooled_out = downsample.max_pool_2d(input=self.conv_out,
                                             ds=poolsize, ignore_border=True)
 
         # add the bias term. Since the bias is a vector (1D array), we first
@@ -480,15 +477,15 @@ class GHHHiddenLayer(object):
 
         W_vec = self.W.reshape([n_in, n_out * n_sum * n_max])
         raw_out = T.dot(input, W_vec) + self.b.flatten().dimshuffle('x', 0)
-        reshaped_raw_out = raw_out.reshape([batch_size, n_out, n_sum, n_max])
+        self.reshaped_raw_out = raw_out.reshape([batch_size, n_out, n_sum, n_max])
 
-        max_out = T.max(reshaped_raw_out, axis=3)
-        sum_out = T.sum(
-            max_out * self.delta.dimshuffle('x', 'x', 0),
+        self.max_out = T.max(self.reshaped_raw_out, axis=3)
+        self.sum_out = T.sum(
+            self.max_out * self.delta.dimshuffle('x', 'x', 0),
             axis=2, dtype=floatX
         )
 
-        lin_output = sum_out
+        lin_output = self.sum_out
         output = (lin_output if activation is None else activation(lin_output))
 
         # If nAtanPool is 2 then it means in this layer, we atan pool
